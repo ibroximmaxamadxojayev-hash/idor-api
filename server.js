@@ -1,6 +1,17 @@
 const express = require("express");
+const path = require("path");
+
 const app = express();
 
+/* Frontend papkani serve qilish */
+app.use(express.static("public"));
+
+/* Homepage route */
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+/* API Database */
 const fileDatabase = {
   "file_2001": {
     userId: 2001,
@@ -15,21 +26,16 @@ const fileDatabase = {
   }
 };
 
+/* IDOR API endpoint */
 app.get("/api/files/:fileId", (req, res) => {
-  const fileId = req.params.fileId;
-  const file = fileDatabase[fileId];
+  const file = fileDatabase[req.params.fileId];
+  if (!file) return res.status(404).send("Not found");
 
-  if (!file) return res.status(404).json({ error: "Not found" });
-
-  // ❌ IDOR vulnerability: no authorization check
   res.json(file);
 });
 
+/* Render port */
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
   console.log("Running on port", PORT);
-});
-app.get("/", (req, res) => {
-  res.send("✅ IDOR API is running! Try /api/files/file_2001");
 });

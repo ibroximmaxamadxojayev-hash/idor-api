@@ -30,3 +30,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Running on port", PORT);
 });
+app.get("/", (req, res) => {
+  res.send("✅ IDOR API is running! Try /api/files/file_2001");
+});
